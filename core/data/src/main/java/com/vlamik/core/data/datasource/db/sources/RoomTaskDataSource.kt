@@ -70,61 +70,56 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
         }
     }
 
-    companion object DefaultTasks {
+    companion object {
         private val MINUTE_IN_MILLIS = TimeUnit.MINUTES.toMillis(1)
         private val HOUR_IN_MILLIS = TimeUnit.HOURS.toMillis(1)
         private val DAY_IN_MILLIS = TimeUnit.DAYS.toMillis(1)
-        private val MONTH_IN_MILLIS = 30 * DAY_IN_MILLIS // Approximate month
-        private val YEAR_IN_MILLIS = 365 * DAY_IN_MILLIS // Approximate year
+        private val MONTH_IN_MILLIS = 30L * DAY_IN_MILLIS
+        private val YEAR_IN_MILLIS = 365L * DAY_IN_MILLIS
 
-        // Reference time for simulating different states.
-        // NOTE: REFERENCE_TIME is set at the time of code compilation/app launch,
-        // so the 'due dates' are relative to this constant. For dynamic states relative to
-        // the *current* real-time, you might need to adjust logic in your domain/UI layer
-        // that calculates actual due dates based on System.currentTimeMillis() and lastExecutedMillis.
-        private val REFERENCE_TIME = System.currentTimeMillis()
+        private fun now(): Long = System.currentTimeMillis()
 
-        // --- 1. Task: File Backup (State: GREEN - recently executed) ---
+        // --- 1. Task: GREEN
         private val taskBackupFiles = TaskEntity(
             id = 1L,
-            name = "Týždenná záloha dát",
-            description = "Pripravte externý disk a zálohujte dôležité pracovné a osobné súbory. Skontrolujte integritu zálohy.",
+            name = "Weekly Data Backup",
+            description = "Prepare an external drive and back up important work and personal files. Check backup integrity.",
             minIntervalMillis = 5 * DAY_IN_MILLIS,
             maxIntervalMillis = 7 * DAY_IN_MILLIS,
             points = 25,
-            executionTimestampsMillis = listOf(REFERENCE_TIME - 2 * DAY_IN_MILLIS - 8 * HOUR_IN_MILLIS),
-            lastExecutedMillis = REFERENCE_TIME - 2 * DAY_IN_MILLIS - 8 * HOUR_IN_MILLIS
+            executionTimestampsMillis = listOf(now() - 2 * DAY_IN_MILLIS - 8 * HOUR_IN_MILLIS),
+            lastExecutedMillis = now() - 2 * DAY_IN_MILLIS - 8 * HOUR_IN_MILLIS
         )
 
-        // --- 2. Task: Regular Housework (State: ORANGE - can be executed) ---
+        // --- 2. Task: ORANGE
         private val taskCleanBathroom = TaskEntity(
             id = 2L,
-            name = "Upratať kúpeľňu",
-            description = "Vyčistiť umývadlo, sprchový kút/vaňu, záchod a podlahu. Doplňte mydlo a toaletný papier.",
+            name = "Clean Bathroom",
+            description = "Clean the sink, shower/bathtub, toilet, and floor. Refill soap and toilet paper.",
             minIntervalMillis = 3 * DAY_IN_MILLIS,
             maxIntervalMillis = 5 * DAY_IN_MILLIS,
             points = 15,
-            executionTimestampsMillis = listOf(REFERENCE_TIME - 4 * DAY_IN_MILLIS - 2 * HOUR_IN_MILLIS),
-            lastExecutedMillis = REFERENCE_TIME - 4 * DAY_IN_MILLIS - 2 * HOUR_IN_MILLIS
+            executionTimestampsMillis = listOf(now() - 4 * DAY_IN_MILLIS - 2 * HOUR_IN_MILLIS),
+            lastExecutedMillis = now() - 4 * DAY_IN_MILLIS - 2 * HOUR_IN_MILLIS
         )
 
-        // --- 3. Task: Service Activity (State: RED - overdue) ---
+        // --- 3. Task: RED (Long overdue)
         private val taskBoilerMaintenance = TaskEntity(
             id = 3L,
-            name = "Ročný servis kotla",
-            description = "Kontaktovať autorizovaného technika pre ročnú revíziu a údržbu vykurovacieho kotla. Skontrolujte dátum posledného servisu.",
+            name = "Annual Boiler Service",
+            description = "Contact an authorized technician for annual inspection and maintenance of the heating boiler. Check last service date.",
             minIntervalMillis = 11 * MONTH_IN_MILLIS,
             maxIntervalMillis = 12 * MONTH_IN_MILLIS,
             points = 50,
-            executionTimestampsMillis = listOf(REFERENCE_TIME - 13 * MONTH_IN_MILLIS - 7 * DAY_IN_MILLIS),
-            lastExecutedMillis = REFERENCE_TIME - 13 * MONTH_IN_MILLIS - 7 * DAY_IN_MILLIS
+            executionTimestampsMillis = listOf(now() - 13 * MONTH_IN_MILLIS - 7 * DAY_IN_MILLIS),
+            lastExecutedMillis = now() - 13 * MONTH_IN_MILLIS - 7 * DAY_IN_MILLIS
         )
 
-        // --- 4. Task: Device Check (State: NEVER EXECUTED / PENDING) ---
+        // --- 4. Task: RED
         private val taskCheckFireExtinguisher = TaskEntity(
             id = 4L,
-            name = "Kontrola hasiacich prístrojov",
-            description = "Skontrolovať tlak a platnosť hasiacich prístrojov v domácnosti a garáži. Zaznamenať dátumy expirácie.",
+            name = "Fire Extinguisher Check",
+            description = "Check pressure and validity of fire extinguishers in the home and garage. Record expiration dates.",
             minIntervalMillis = 6 * MONTH_IN_MILLIS,
             maxIntervalMillis = 1 * YEAR_IN_MILLIS,
             points = 30,
@@ -132,20 +127,32 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
             lastExecutedMillis = null
         )
 
-        // --- 5. Task: Frequent Maintenance (State: GREEN - recently executed, short interval) ---
+        // --- 5. Task: GREEN
         private val taskCheckCoffeeMachine = TaskEntity(
             id = 5L,
-            name = "Vyčistiť kávovar",
-            description = "Vyprázdniť a vyčistiť zásobník na vodu a odpadovú nádobku kávovaru. Prepláchnuť systém.",
+            name = "Clean Coffee Machine",
+            description = "Empty and clean the water reservoir and waste bin of the coffee machine. Flush the system.",
             minIntervalMillis = 6 * HOUR_IN_MILLIS,
             maxIntervalMillis = 12 * HOUR_IN_MILLIS,
             points = 5,
             executionTimestampsMillis = listOf(
-                REFERENCE_TIME - 1 * DAY_IN_MILLIS,
-                REFERENCE_TIME - 18 * HOUR_IN_MILLIS,
-                REFERENCE_TIME - 3 * HOUR_IN_MILLIS - 20 * MINUTE_IN_MILLIS
+                now() - 1 * DAY_IN_MILLIS,
+                now() - 18 * HOUR_IN_MILLIS,
+                now() - 3 * HOUR_IN_MILLIS - 20 * MINUTE_IN_MILLIS
             ),
-            lastExecutedMillis = REFERENCE_TIME - 3 * HOUR_IN_MILLIS - 20 * MINUTE_IN_MILLIS
+            lastExecutedMillis = now() - 3 * HOUR_IN_MILLIS - 20 * MINUTE_IN_MILLIS
+        )
+
+        // --- 6. Task: ORANGE
+        private val taskQuarterlyReview = TaskEntity(
+            id = 6L,
+            name = "Quarterly Financial Review",
+            description = "Review Q2 financial statements and prepare for stakeholder meeting.",
+            minIntervalMillis = 2 * MONTH_IN_MILLIS,
+            maxIntervalMillis = 3 * MONTH_IN_MILLIS,
+            points = 70,
+            executionTimestampsMillis = listOf(now() - 2 * MONTH_IN_MILLIS - 20 * DAY_IN_MILLIS),
+            lastExecutedMillis = now() - 2 * MONTH_IN_MILLIS - 20 * DAY_IN_MILLIS
         )
 
         val allTasks = listOf(
@@ -153,7 +160,8 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
             taskCleanBathroom,
             taskBoilerMaintenance,
             taskCheckFireExtinguisher,
-            taskCheckCoffeeMachine
+            taskCheckCoffeeMachine,
+            taskQuarterlyReview
         )
     }
 }

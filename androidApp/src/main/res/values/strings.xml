@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">ReTaskApp</string>
+    <string name="back">Back</string>
+    <string name="home">Home</string>
+
+
+    <!-- Generic -->
+    <string name="data_error">Error when retrieving data.</string>
+
+    <!-- List Screen -->
+    <string name="tasks_title">Tasks</string>
+    <string name="retry">Retry</string>
+    <string name="no_tasks_available">No tasks are available</string>
+    <string name="cd_view_task_details">View task details</string>
+    <string name="refresh">Refresh</string>
+</resources>

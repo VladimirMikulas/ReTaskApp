@@ -43,9 +43,9 @@ import com.vlamik.retask.R
 import com.vlamik.retask.common.utils.preview.DeviceFormatPreview
 import com.vlamik.retask.common.utils.preview.FontScalePreview
 import com.vlamik.retask.common.utils.preview.ThemeModePreview
+import com.vlamik.retask.component.ErrorMessage
 import com.vlamik.retask.component.LoadingIndicator
 import com.vlamik.retask.component.appbars.ReTaskAppBar
-import com.vlamik.retask.component.asString
 import com.vlamik.retask.component.toFormattedString
 import com.vlamik.retask.features.tasklist.TaskListViewModel.TaskListScreenUiState
 import com.vlamik.retask.theme.Green
@@ -95,7 +95,7 @@ private fun TaskListScreenContent(
                     onTaskClick = onTaskClick
                 )
 
-                is TaskListScreenUiState.DataError -> ErrorState(
+                is TaskListScreenUiState.DataError -> ErrorMessage(
                     errorMessage = state.error
                 )
             }
@@ -201,24 +201,6 @@ private fun TaskListItem(
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(MaterialTheme.dimensions.iconSizeMedium)
         )
-    }
-}
-
-@Composable
-private fun ErrorState(errorMessage: AppText) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(MaterialTheme.dimensions.large),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = errorMessage.asString(),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.error
-        )
-        Spacer(modifier = Modifier.height(MaterialTheme.dimensions.large))
     }
 }
 

@@ -118,7 +118,7 @@ fun TaskDetailScreen(
                 }
 
                 is TaskDetailViewModel.UiState.DataError -> {
-                    ErrorMessage(errorMessage = state.message.asString(context))
+                    ErrorMessage(errorMessage = state.message)
                 }
 
                 is TaskDetailViewModel.UiState.Success -> {

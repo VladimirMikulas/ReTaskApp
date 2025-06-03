@@ -13,9 +13,7 @@ object TaskMapper {
     /**
      * Maps a TaskEntity to a simplified domain model TaskItemModel
      */
-    fun TaskEntity.toTaskItemModel(): TaskItemModel {
-        val currentTime = System.currentTimeMillis()
-
+    fun TaskEntity.toTaskItemModel(currentTime: Long = System.currentTimeMillis()): TaskItemModel {
         val taskTimeStatus = getTaskTimeStatus(
             lastExecutedMillis = this.lastExecutedMillis,
             maxIntervalMillis = this.maxIntervalMillis,

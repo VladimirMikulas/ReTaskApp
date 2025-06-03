@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : TaskDataSource {
@@ -71,11 +70,12 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
     }
 
     companion object {
-        private val MINUTE_IN_MILLIS = TimeUnit.MINUTES.toMillis(1)
-        private val HOUR_IN_MILLIS = TimeUnit.HOURS.toMillis(1)
-        private val DAY_IN_MILLIS = TimeUnit.DAYS.toMillis(1)
-        private val MONTH_IN_MILLIS = 30L * DAY_IN_MILLIS
-        private val YEAR_IN_MILLIS = 365L * DAY_IN_MILLIS
+        private const val SECOND_IN_MILLIS = 1000L
+        private const val MINUTE_IN_MILLIS = 60 * SECOND_IN_MILLIS
+        private const val HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS
+        private const val DAY_IN_MILLIS = 24 * HOUR_IN_MILLIS
+        private const val MONTH_IN_MILLIS = 30 * DAY_IN_MILLIS
+        private const val YEAR_IN_MILLIS = 365 * DAY_IN_MILLIS
 
         private fun now(): Long = System.currentTimeMillis()
 
@@ -155,13 +155,37 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
             lastExecutedMillis = now() - 2 * MONTH_IN_MILLIS - 20 * DAY_IN_MILLIS
         )
 
+        private val taskDueInSeconds = TaskEntity(
+            id = 1L,
+            name = "Odpovedať na dôležitý email",
+            description = "Posledná urgentná pripomienka pred schôdzkou.",
+            minIntervalMillis = 15 * SECOND_IN_MILLIS,
+            maxIntervalMillis = 30 * SECOND_IN_MILLIS,
+            points = 10,
+            executionTimestampsMillis = listOf(now() - 10 * SECOND_IN_MILLIS),
+            lastExecutedMillis = now() - 10 * SECOND_IN_MILLIS
+        )
+
+        private val taskDueInMinutes = TaskEntity(
+            id = 2L,
+            name = "Pripraviť podklady pre prezentáciu",
+            description = "Doplniť grafy a dáta do Powerpointu.",
+            minIntervalMillis = 20 * MINUTE_IN_MILLIS,
+            maxIntervalMillis = 30 * MINUTE_IN_MILLIS,
+            points = 30,
+            executionTimestampsMillis = listOf(now() - 15 * MINUTE_IN_MILLIS),
+            lastExecutedMillis = now() - 15 * MINUTE_IN_MILLIS
+        )
+
         val allTasks = listOf(
             taskBackupFiles,
             taskCleanBathroom,
             taskBoilerMaintenance,
             taskCheckFireExtinguisher,
             taskCheckCoffeeMachine,
-            taskQuarterlyReview
+            taskQuarterlyReview,
+            taskDueInSeconds,
+            taskDueInMinutes
         )
     }
 }

@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.vlamik.retask.features.taskdetail.TaskDetailScreen
 import com.vlamik.retask.features.tasklist.TaskListScreen
 
 
@@ -21,6 +22,16 @@ fun ReTaskNavHost(
                     navController.navigate(NavRoutes.TaskDetails.build(id.toString()))
                 }
             )
+        }
+
+        composable(NavRoutes.TaskDetails.path) { backStackEntry ->
+            backStackEntry.arguments?.getString(NavRoutes.DETAILS_ID_KEY)?.let {
+                TaskDetailScreen(
+                    taskDetailViewModel(taskId = it),
+                ) {
+                    navController.navigateUp()
+                }
+            }
         }
     }
 }

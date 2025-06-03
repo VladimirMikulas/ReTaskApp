@@ -106,7 +106,6 @@ private fun TaskList(
     tasks: List<TaskItemModel>,
     onTaskClick: (Long) -> Unit
 ) {
-
     if (tasks.isEmpty()) {
         EmptyState()
     } else {

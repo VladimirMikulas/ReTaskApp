@@ -12,5 +12,11 @@
     <string name="retry">Retry</string>
     <string name="no_tasks_available">No tasks are available</string>
     <string name="cd_view_task_details">View task details</string>
-    <string name="refresh">Refresh</string>
+
+    <!-- Task Details Screen -->
+    <string name="task_details_title_fallback">Task Details</string>
+    <string name="task_description_label">Description</string>
+    <string name="execution_count_label">Execution count</string>
+    <string name="execute_task_button">Execute</string>
+    <string name="task_executed_success">Task executed successfully</string>
 </resources>

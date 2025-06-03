@@ -89,9 +89,6 @@ dependencies {
     implementation(project(":core:data"))
     kapt(libs.hilt.compiler)
 
-    // Ktor Engine
-    implementation(libs.ktor.core)
-    implementation(libs.ktor.engine.android)
 
     // SplashScreen
     implementation(libs.splashscreen)
@@ -112,7 +109,6 @@ dependencies {
 
     androidTestImplementation(libs.test.core)
     androidTestImplementation(libs.bundles.compose.test)
-    androidTestImplementation(libs.ktor.engine.mock)
 
     // Test Dependencies
     testImplementation(libs.bundles.test.core)

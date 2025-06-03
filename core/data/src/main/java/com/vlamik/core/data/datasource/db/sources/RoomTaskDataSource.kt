@@ -156,7 +156,7 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
         )
 
         private val taskDueInSeconds = TaskEntity(
-            id = 1L,
+            id = 7L,
             name = "Odpovedať na dôležitý email",
             description = "Posledná urgentná pripomienka pred schôdzkou.",
             minIntervalMillis = 15 * SECOND_IN_MILLIS,
@@ -167,7 +167,7 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
         )
 
         private val taskDueInMinutes = TaskEntity(
-            id = 2L,
+            id = 8L,
             name = "Pripraviť podklady pre prezentáciu",
             description = "Doplniť grafy a dáta do Powerpointu.",
             minIntervalMillis = 20 * MINUTE_IN_MILLIS,

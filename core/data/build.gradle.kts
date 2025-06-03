@@ -26,7 +26,6 @@ android {
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:commons"))
-    api(libs.bundles.network)
     implementation(libs.datastore)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)

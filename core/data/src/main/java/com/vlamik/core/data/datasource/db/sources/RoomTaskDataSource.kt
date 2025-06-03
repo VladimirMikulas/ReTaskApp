@@ -57,7 +57,7 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
             currentTaskEntity?.let {
                 val currentTime = System.currentTimeMillis()
                 val updatedTimestamps = it.executionTimestampsMillis + currentTime
-                val newLastExecuted = updatedTimestamps.maxOrNull()
+                val newLastExecuted = updatedTimestamps.max()
 
                 val updatedTaskEntity = it.copy(
                     executionTimestampsMillis = updatedTimestamps,
@@ -82,8 +82,8 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
         // --- 1. Task: GREEN
         private val taskBackupFiles = TaskEntity(
             id = 1L,
-            name = "Weekly Data Backup",
-            description = "Prepare an external drive and back up important work and personal files. Check backup integrity.",
+            name = "Týždenná záloha dát",
+            description = "Pripravte externý disk a zálohujte dôležité pracovné a osobné súbory. Skontrolujte integritu zálohy.",
             minIntervalMillis = 5 * DAY_IN_MILLIS,
             maxIntervalMillis = 7 * DAY_IN_MILLIS,
             points = 25,
@@ -94,8 +94,8 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
         // --- 2. Task: ORANGE
         private val taskCleanBathroom = TaskEntity(
             id = 2L,
-            name = "Clean Bathroom",
-            description = "Clean the sink, shower/bathtub, toilet, and floor. Refill soap and toilet paper.",
+            name = "Upratať kúpeľňu",
+            description = "Vyčistite umývadlo, sprchu/vaňu, toaletu a podlahu. Doplňte mydlo a toaletný papier.",
             minIntervalMillis = 3 * DAY_IN_MILLIS,
             maxIntervalMillis = 5 * DAY_IN_MILLIS,
             points = 15,
@@ -106,8 +106,8 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
         // --- 3. Task: RED (Long overdue)
         private val taskBoilerMaintenance = TaskEntity(
             id = 3L,
-            name = "Annual Boiler Service",
-            description = "Contact an authorized technician for annual inspection and maintenance of the heating boiler. Check last service date.",
+            name = "Ročná údržba kotla",
+            description = "Kontaktujte autorizovaného technika pre ročnú kontrolu a údržbu vykurovacieho kotla. Skontrolujte dátum poslednej služby.",
             minIntervalMillis = 11 * MONTH_IN_MILLIS,
             maxIntervalMillis = 12 * MONTH_IN_MILLIS,
             points = 50,
@@ -118,20 +118,20 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
         // --- 4. Task: RED
         private val taskCheckFireExtinguisher = TaskEntity(
             id = 4L,
-            name = "Fire Extinguisher Check",
-            description = "Check pressure and validity of fire extinguishers in the home and garage. Record expiration dates.",
+            name = "Kontrola hasiaceho prístroja",
+            description = "Skontrolujte tlak a platnosť hasiacich prístrojov v domácnosti a garáži. Zaznamenajte dátumy expirácie.",
             minIntervalMillis = 6 * MONTH_IN_MILLIS,
             maxIntervalMillis = 1 * YEAR_IN_MILLIS,
             points = 30,
             executionTimestampsMillis = emptyList(),
-            lastExecutedMillis = null
+            lastExecutedMillis = 0L
         )
 
         // --- 5. Task: GREEN
         private val taskCheckCoffeeMachine = TaskEntity(
             id = 5L,
-            name = "Clean Coffee Machine",
-            description = "Empty and clean the water reservoir and waste bin of the coffee machine. Flush the system.",
+            name = "Vyčistiť kávovar",
+            description = "Vyprázdnite a vyčistite nádržku na vodu a odpadovú nádobu kávovaru. Prepláchnite systém.",
             minIntervalMillis = 6 * HOUR_IN_MILLIS,
             maxIntervalMillis = 12 * HOUR_IN_MILLIS,
             points = 5,
@@ -146,8 +146,8 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
         // --- 6. Task: ORANGE
         private val taskQuarterlyReview = TaskEntity(
             id = 6L,
-            name = "Quarterly Financial Review",
-            description = "Review Q2 financial statements and prepare for stakeholder meeting.",
+            name = "Štvrťročná finančná kontrola",
+            description = "Prezrite finančné výkazy Q2 a pripravte sa na stretnutie so zúčastnenými stranami.",
             minIntervalMillis = 2 * MONTH_IN_MILLIS,
             maxIntervalMillis = 3 * MONTH_IN_MILLIS,
             points = 70,

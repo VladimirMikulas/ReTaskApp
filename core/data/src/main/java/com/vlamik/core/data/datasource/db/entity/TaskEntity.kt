@@ -40,7 +40,7 @@ data class TaskEntity(
     val executionTimestampsMillis: List<Long> = emptyList(),
 
     @ColumnInfo(name = "last_executed_ms")
-    val lastExecutedMillis: Long? = null,
+    val lastExecutedMillis: Long = 0L,
 )
 
 /**

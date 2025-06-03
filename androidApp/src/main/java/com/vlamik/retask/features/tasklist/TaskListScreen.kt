@@ -36,7 +36,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.vlamik.core.commons.AppText
 import com.vlamik.core.domain.models.TaskItemModel
-import com.vlamik.core.domain.models.TaskStatus
+import com.vlamik.core.domain.models.TaskStatusColor
+import com.vlamik.core.domain.models.TaskTimeStatus
+import com.vlamik.core.domain.models.TimeComponents
 import com.vlamik.retask.R
 import com.vlamik.retask.common.utils.preview.DeviceFormatPreview
 import com.vlamik.retask.common.utils.preview.FontScalePreview
@@ -44,6 +46,7 @@ import com.vlamik.retask.common.utils.preview.ThemeModePreview
 import com.vlamik.retask.component.LoadingIndicator
 import com.vlamik.retask.component.appbars.ReTaskAppBar
 import com.vlamik.retask.component.asString
+import com.vlamik.retask.component.toFormattedString
 import com.vlamik.retask.features.tasklist.TaskListViewModel.TaskListScreenUiState
 import com.vlamik.retask.theme.Green
 import com.vlamik.retask.theme.Orange
@@ -150,9 +153,9 @@ private fun TaskListItem(
     onClicked: () -> Unit
 ) {
     val indicatorColor = when (task.status) {
-        TaskStatus.GREEN -> Green
-        TaskStatus.ORANGE -> Orange
-        TaskStatus.RED -> Red
+        TaskStatusColor.GREEN -> Green
+        TaskStatusColor.ORANGE -> Orange
+        TaskStatusColor.RED -> Red
     }
 
     Row(
@@ -182,16 +185,14 @@ private fun TaskListItem(
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurface
             )
-            if (task.formattedRemainingTime.isNotBlank()) {
                 Spacer(modifier = Modifier.height(MaterialTheme.dimensions.extraSmall))
                 Text(
-                    text = task.formattedRemainingTime,
+                    text = task.timeStatus.toFormattedString(),
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontStyle = FontStyle.Italic
                     ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            }
         }
 
         Icon(
@@ -246,22 +247,66 @@ private fun EmptyState() {
     }
 }
 
+
 @ThemeModePreview
 @FontScalePreview
 @DeviceFormatPreview
 @Composable
 private fun TaskListScreenPreview_Success() {
     val sampleTasks = listOf(
-        TaskItemModel(1L, "Týždenná záloha dát", TaskStatus.GREEN, "Splatné za 5 dní"),
-        TaskItemModel(2L, "Upratať kúpeľňu", TaskStatus.ORANGE, "Splatné do 1 dňa"),
-        TaskItemModel(3L, "Ročný servis kotla", TaskStatus.RED, "Po termíne 2 týždne"),
         TaskItemModel(
-            4L,
-            "Kontrola hasiacich prístrojov",
-            TaskStatus.ORANGE,
-            "Splatné za 3 mesiace"
+            id = 1L,
+            name = "Týždenná záloha dát",
+            status = TaskStatusColor.GREEN,
+            timeStatus = TaskTimeStatus.DueInLessThanMonth(components = TimeComponents(days = 5))
         ),
-        TaskItemModel(5L, "Vyčistiť kávovar", TaskStatus.GREEN, "Splatné za 4 hodiny")
+        TaskItemModel(
+            id = 2L,
+            name = "Upratať kúpeľňu",
+            status = TaskStatusColor.ORANGE,
+            timeStatus = TaskTimeStatus.DueInLessThanDay(components = TimeComponents(hours = 23))
+        ),
+        TaskItemModel(
+            id = 3L,
+            name = "Ročný servis kotla",
+            status = TaskStatusColor.RED,
+            timeStatus = TaskTimeStatus.Overdue(components = TimeComponents(days = 14))
+        ),
+        TaskItemModel(
+            id = 4L,
+            name = "Kontrola hasiacich prístrojov",
+            status = TaskStatusColor.ORANGE,
+            timeStatus = TaskTimeStatus.DueInLessThanYear(components = TimeComponents(months = 3))
+        ),
+        TaskItemModel(
+            id = 5L,
+            name = "Vyčistiť kávovar",
+            status = TaskStatusColor.GREEN,
+            timeStatus = TaskTimeStatus.DueInLessThanDay(components = TimeComponents(hours = 4))
+        ),
+        TaskItemModel(
+            id = 6L,
+            name = "Nová úloha (nikdy nevykonaná)",
+            status = TaskStatusColor.GREEN,
+            timeStatus = TaskTimeStatus.NeverExecuted
+        ),
+        TaskItemModel(
+            id = 7L,
+            name = "Už už (menej ako minúta)",
+            status = TaskStatusColor.ORANGE,
+            timeStatus = TaskTimeStatus.DueInLessThanMinute(components = TimeComponents(seconds = 30))
+        ),
+        TaskItemModel(
+            id = 8L,
+            name = "Splatné za 1 hodinu a 10 sekúnd",
+            status = TaskStatusColor.ORANGE,
+            timeStatus = TaskTimeStatus.DueInLessThanHour(
+                components = TimeComponents(
+                    minutes = 59,
+                    seconds = 10
+                )
+            )
+        )
     )
     TemplateTheme {
         TaskListScreenContent(

@@ -1,22 +1,67 @@
 <resources>
     <string name="app_name">ReTaskApp</string>
-    <string name="back">Back</string>
-    <string name="home">Home</string>
+    <string name="back">Späť</string>
+    <string name="home">Domov</string>
 
 
     <!-- Generic -->
-    <string name="data_error">Error when retrieving data.</string>
+    <string name="data_error">Chyba pri načítaní dát.</string>
 
     <!-- List Screen -->
-    <string name="tasks_title">Tasks</string>
-    <string name="retry">Retry</string>
-    <string name="no_tasks_available">No tasks are available</string>
-    <string name="cd_view_task_details">View task details</string>
+    <string name="tasks_title">Úlohy</string>
+    <string name="no_tasks_available">Žiadne úlohy nie sú k dispozícii</string>
+    <string name="cd_view_task_details">Zobraziť detaily úlohy</string>
+    <string name="due_in_placeholder">Nutné vykonať o</string>
+    <string name="overdue_placeholder">Po termíne</string>
+    <string name="due_now_placeholder">Nutné vykonať teraz</string>
+    <string name="never_executed_placeholder">Nikdy nevykonané</string>
+    <string name="and_separator">a</string>
+    <plurals name="seconds_plural">
+        <item quantity="one">%d sekundu</item>
+        <item quantity="few">%d sekundy</item>
+        <item quantity="many">%d sekúnd</item>
+        <item quantity="other">%d sekúnd</item>
+    </plurals>
+
+    <plurals name="minutes_plural">
+        <item quantity="one">%d minútu</item>
+        <item quantity="few">%d minúty</item>
+        <item quantity="many">%d minút</item>
+        <item quantity="other">%d minút</item>
+    </plurals>
+
+    <plurals name="hours_plural">
+        <item quantity="one">%d hodinu</item>
+        <item quantity="few">%d hodiny</item>
+        <item quantity="many">%d hodín</item>
+        <item quantity="other">%d hodín</item>
+    </plurals>
+
+    <plurals name="days_plural">
+        <item quantity="one">%d deň</item>
+        <item quantity="few">%d dni</item>
+        <item quantity="many">%d dní</item>
+        <item quantity="other">%d dní</item>
+    </plurals>
+
+    <plurals name="months_plural">
+        <item quantity="one">%d mesiac</item>
+        <item quantity="few">%d mesiace</item>
+        <item quantity="many">%d mesiacov</item>
+        <item quantity="other">%d mesiacov</item>
+    </plurals>
+
+    <plurals name="years_plural">
+        <item quantity="one">%d rok</item>
+        <item quantity="few">%d roky</item>
+        <item quantity="many">%d rokov</item>
+        <item quantity="other">%d rokov</item>
+    </plurals>
 
     <!-- Task Details Screen -->
-    <string name="task_details_title_fallback">Task Details</string>
-    <string name="task_description_label">Description</string>
-    <string name="execution_count_label">Execution count</string>
-    <string name="execute_task_button">Execute</string>
-    <string name="task_executed_success">Task executed successfully</string>
+    <string name="task_details_title_fallback">Detaily úlohy</string>
+    <string name="task_description_label">Popis</string>
+    <string name="execution_count_label">Počet vykonaní</string>
+    <string name="execute_task_button">Vykonať</string>
+    <string name="task_executed_success">Úloha bola úspešne vykonaná</string>
 </resources>

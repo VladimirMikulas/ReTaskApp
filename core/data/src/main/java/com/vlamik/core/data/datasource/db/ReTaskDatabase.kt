@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.vlamik.core.data.datasource.db.dao.TaskDao
 import com.vlamik.core.data.datasource.db.entity.TaskEntity
 
-@Database(entities = [TaskEntity::class], version = 1)
+@Database(entities = [TaskEntity::class], version = 1, exportSchema = false)
 abstract class ReTaskDatabase : RoomDatabase() {
 
     abstract val taskDao: TaskDao

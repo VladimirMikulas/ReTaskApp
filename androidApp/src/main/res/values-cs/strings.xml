@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ReTaskApp</string>
+    <string name="back">Zpět</string>
+    <string name="home">Domů</string>
+
+    <string name="data_error">Chyba při načítání dat.</string>
+
+    <string name="tasks_title">Úkoly</string>
+    <string name="no_tasks_available">Žádné úkoly nejsou k dispozici</string>
+    <string name="cd_view_task_details">Zobrazit detaily úkolu</string>
+    <string name="due_in_placeholder">Nutné provést za</string>
+    <string name="overdue_placeholder">Po termínu</string>
+    <string name="due_now_placeholder">Nutné provést nyní</string>
+    <string name="never_executed_placeholder">Nikdy neprovedeno</string>
+    <string name="and_separator">a</string>
+
+    <string name="task_details_title_fallback">Detaily úkolu</string>
+    <string name="task_description_label">Popis</string>
+    <string name="execution_count_label">Počet provedení</string>
+    <string name="execute_task_button">Provést</string>
+    <string name="task_executed_success">Úkol byl úspěšně proveden</string>
+    <string name="task_executed_failure">Úkol se nepodařilo provést</string>
+
+</resources>

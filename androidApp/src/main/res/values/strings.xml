@@ -64,4 +64,6 @@
     <string name="execution_count_label">Počet vykonaní</string>
     <string name="execute_task_button">Vykonať</string>
     <string name="task_executed_success">Úloha bola úspešne vykonaná</string>
+    <string name="task_executed_failure">Úloha sa nepodarila vykonať</string>
+
 </resources>

@@ -12,7 +12,16 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
+/**
+ * Implementation of [TaskDataSource] using Room Persistence Library.
+ * Handles database operations for tasks.
+ */
 class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : TaskDataSource {
+
+    /**
+     * Initializes the database with default tasks if it's empty.
+     * This ensures the app has some initial data on first launch.
+     */
     override suspend fun initTasksData() {
         runCatching {
             val existingTasks = taskDao.getAllTasksSortedByDueDate().firstOrNull()
@@ -29,6 +38,10 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
         }
     }
 
+    /**
+     * Retrieves all tasks from the database as a [Flow] of [Result] containing a list of [TaskEntity].
+     * The tasks are sorted by due date.
+     */
     override fun getAllTasks(): Flow<Result<List<TaskEntity>>> {
         return taskDao.getAllTasksSortedByDueDate()
             .map { tasks ->
@@ -39,6 +52,9 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
             }
     }
 
+    /**
+     * Retrieves a single task by its ID from the database as a [Flow] of [Result] containing a [TaskEntity].
+     */
     override fun getTaskById(taskId: Long): Flow<Result<TaskEntity?>> {
         return taskDao.getTaskById(taskId)
             .map { task ->
@@ -49,25 +65,34 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
             }
     }
 
+    /**
+     * Marks a specific task as "executed" by updating its execution timestamps.
+     * Throws [NoSuchElementException] if the task is not found.
+     */
     override suspend fun executeTask(taskId: Long) {
         runCatching {
-            val currentTaskEntity = taskDao.getTaskById(taskId).firstOrNull()
+            val currentTaskEntity =
+                taskDao.getTaskById(taskId).firstOrNull() // Get current task state
 
             currentTaskEntity?.let {
                 val currentTime = System.currentTimeMillis()
+                // Add the current execution time to the list of timestamps
                 val updatedTimestamps = it.executionTimestampsMillis + currentTime
+                // Find the latest execution time from the updated list
                 val newLastExecuted = updatedTimestamps.max()
 
+                // Create a new TaskEntity with updated timestamps and last executed time
                 val updatedTaskEntity = it.copy(
                     executionTimestampsMillis = updatedTimestamps,
                     lastExecutedMillis = newLastExecuted
                 )
-                taskDao.updateTask(updatedTaskEntity)
+                taskDao.updateTask(updatedTaskEntity) // Update the task in the database
             } ?: throw NoSuchElementException("Task with ID $taskId not found for execution.")
         }.onFailureIgnoreCancellation { e ->
             loge("Failed to execute task ID $taskId: ${e.message}", e)
         }
     }
+
 
     companion object {
         private const val SECOND_IN_MILLIS = 1000L
@@ -103,13 +128,13 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
             lastExecutedMillis = now() - 4 * DAY_IN_MILLIS - 2 * HOUR_IN_MILLIS
         )
 
-        // --- 3. Task: RED (Long overdue)
+        // --- 3. Task: ORANGE
         private val taskBoilerMaintenance = TaskEntity(
             id = 3L,
             name = "Ročná údržba kotla",
             description = "Kontaktujte autorizovaného technika pre ročnú kontrolu a údržbu vykurovacieho kotla. Skontrolujte dátum poslednej služby.",
             minIntervalMillis = 11 * MONTH_IN_MILLIS,
-            maxIntervalMillis = 12 * MONTH_IN_MILLIS,
+            maxIntervalMillis = 14 * MONTH_IN_MILLIS,
             points = 50,
             executionTimestampsMillis = listOf(now() - 13 * MONTH_IN_MILLIS - 7 * DAY_IN_MILLIS),
             lastExecutedMillis = now() - 13 * MONTH_IN_MILLIS - 7 * DAY_IN_MILLIS
@@ -155,6 +180,7 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
             lastExecutedMillis = now() - 2 * MONTH_IN_MILLIS - 20 * DAY_IN_MILLIS
         )
 
+        // --- 7. Task: GREEN
         private val taskDueInSeconds = TaskEntity(
             id = 7L,
             name = "Odpovedať na dôležitý email",
@@ -166,6 +192,7 @@ class RoomTaskDataSource @Inject constructor(private val taskDao: TaskDao) : Tas
             lastExecutedMillis = now() - 10 * SECOND_IN_MILLIS
         )
 
+        // --- 8. Task: GREEN
         private val taskDueInMinutes = TaskEntity(
             id = 8L,
             name = "Pripraviť podklady pre prezentáciu",

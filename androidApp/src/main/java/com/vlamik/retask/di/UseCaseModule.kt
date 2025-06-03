@@ -5,6 +5,7 @@ import com.vlamik.core.data.repository.TaskRepositoryImpl
 import com.vlamik.core.domain.usecase.AppSettingsUseCase
 import com.vlamik.core.domain.usecase.ExecuteTaskUseCase
 import com.vlamik.core.domain.usecase.GetTaskDetailUseCase
+import com.vlamik.core.domain.usecase.GetTaskListUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,5 +37,13 @@ class UseCaseModule {
         repo: TaskRepositoryImpl
     ): ExecuteTaskUseCase {
         return ExecuteTaskUseCase(repo)
+    }
+
+    @Provides
+    @Singleton
+    fun providesGetTaskListUseCase(
+        repo: TaskRepositoryImpl
+    ): GetTaskListUseCase {
+        return GetTaskListUseCase(repo)
     }
 }

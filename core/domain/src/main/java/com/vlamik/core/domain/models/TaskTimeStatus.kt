@@ -17,8 +17,7 @@ sealed class TaskTimeStatus {
      * The task is overdue and needs to be executed immediately.
      * Contains the exact duration by which it's overdue.
      */
-    data class Overdue(val components: TimeComponents) : TaskTimeStatus() {
-    }
+    data class Overdue(val components: TimeComponents) : TaskTimeStatus()
 
     /**
      * The task is due within a minute.

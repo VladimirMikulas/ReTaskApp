@@ -79,7 +79,31 @@ fun TaskDetailScreen(
                 backButtonClickAction = onBackClicked
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = {
+            val taskDetail = (uiState as? TaskDetailViewModel.UiState.Success)?.task
+            Button(
+                onClick = viewModel::onExecuteTask,
+                enabled = !isExecutingTask && (taskDetail?.canExecute ?: false),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(MaterialTheme.dimensions.buttonHeight + MaterialTheme.dimensions.large)
+                    .padding(
+                        start = MaterialTheme.dimensions.large,
+                        end = MaterialTheme.dimensions.large,
+                        bottom = MaterialTheme.dimensions.large
+                    )
+            ) {
+                if (isExecutingTask) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(MaterialTheme.dimensions.iconSizeLarge),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
+                } else {
+                    Text(stringResource(R.string.execute_task_button))
+                }
+            }
+        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -99,9 +123,7 @@ fun TaskDetailScreen(
 
                 is TaskDetailViewModel.UiState.Success -> {
                     TaskDetailContent(
-                        task = state.task,
-                        isExecuting = isExecutingTask,
-                        onExecuteTask = viewModel::onExecuteTask
+                        task = state.task
                     )
                 }
             }
@@ -111,9 +133,7 @@ fun TaskDetailScreen(
 
 @Composable
 private fun TaskDetailContent(
-    task: TaskDetailModel,
-    isExecuting: Boolean,
-    onExecuteTask: () -> Unit
+    task: TaskDetailModel
 ) {
     Spacer(modifier = Modifier.height(MaterialTheme.dimensions.large))
     Card(
@@ -153,25 +173,6 @@ private fun TaskDetailContent(
             )
         }
     }
-
-    Spacer(modifier = Modifier.height(MaterialTheme.dimensions.extraLarge))
-
-    Button(
-        onClick = onExecuteTask,
-        enabled = !isExecuting && task.canExecute,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(MaterialTheme.dimensions.buttonHeight),
-    ) {
-        if (isExecuting) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(MaterialTheme.dimensions.iconSizeLarge),
-                color = MaterialTheme.colorScheme.onPrimary,
-            )
-        } else {
-            Text(stringResource(R.string.execute_task_button))
-        }
-    }
 }
 
 @ThemeModePreview
@@ -187,9 +188,7 @@ private fun TaskDetailScreenPreview_Success() {
                 description = "Prepare an external drive and back up important work and personal files. Check backup integrity. Ensure all critical documents are secured off-site.",
                 numberOfExecutions = 15,
                 canExecute = true
-            ),
-            isExecuting = false,
-            onExecuteTask = {}
+            )
         )
     }
 }
@@ -207,9 +206,7 @@ private fun TaskDetailScreenPreview_Executing() {
                 description = "Prepare an external drive and back up important work and personal files. Check backup integrity.",
                 numberOfExecutions = 15,
                 canExecute = true,
-            ),
-            isExecuting = true,
-            onExecuteTask = {}
+            )
         )
     }
 }
@@ -227,9 +224,7 @@ private fun TaskDetailScreenPreview_DisabledButton() {
                 description = "Meditate for 15 minutes to improve focus and reduce stress. Use a guided meditation app or practice mindfulness.",
                 numberOfExecutions = 10,
                 canExecute = false
-            ),
-            isExecuting = false,
-            onExecuteTask = {}
+            )
         )
     }
 }

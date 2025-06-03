@@ -3,8 +3,9 @@ package com.vlamik.retask.features.tasklist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vlamik.core.commons.AppText
+import com.vlamik.core.commons.onFailureIgnoreCancellation
 import com.vlamik.core.domain.models.TaskItemModel
-import com.vlamik.core.domain.repository.TaskRepository
+import com.vlamik.core.domain.usecase.GetTaskListUseCase
 import com.vlamik.retask.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,9 +16,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+/**
+ * ViewModel for the Task List screen.
+ * Responsible for fetching and managing the list of tasks to be displayed.
+ * Uses Hilt for dependency injection.
+ */
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
-    private val taskRepository: TaskRepository,
+    private val getTaskListUseCase: GetTaskListUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<TaskListScreenUiState>(TaskListScreenUiState.LoadingData)
@@ -27,15 +33,18 @@ class TaskListViewModel @Inject constructor(
         loadTasks()
     }
 
+    /**
+     * Loads tasks from the repository and updates the UI state accordingly.
+     * Uses collectLatest to ensure only the latest data emission is processed.
+     */
     private fun loadTasks() {
         viewModelScope.launch {
-            _state.value = TaskListScreenUiState.LoadingData
-            taskRepository.getAllTasks().collectLatest { result ->
+            getTaskListUseCase().collectLatest { result ->
                 result
                     .onSuccess { tasks ->
                         _state.value = TaskListScreenUiState.UpdateSuccess(tasks)
                     }
-                    .onFailure { throwable ->
+                    .onFailureIgnoreCancellation { throwable ->
                         _state.value = TaskListScreenUiState.DataError(throwable.message?.let {
                             AppText.dynamic(it)
                         } ?: AppText.from(R.string.data_error))
@@ -44,6 +53,9 @@ class TaskListViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Sealed interface representing the various UI states of the Task List screen.
+     */
     sealed interface TaskListScreenUiState {
         data object LoadingData : TaskListScreenUiState
         data class UpdateSuccess(

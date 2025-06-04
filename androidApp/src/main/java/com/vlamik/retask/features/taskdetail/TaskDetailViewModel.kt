@@ -1,6 +1,5 @@
 package com.vlamik.retask.features.taskdetail
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -15,12 +14,11 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
 
 /**
  * ViewModel for the Task Detail screen, responsible for fetching and managing task details,
@@ -29,42 +27,50 @@ import kotlinx.coroutines.launch
  */
 class TaskDetailViewModel @AssistedInject constructor(
     @Assisted private val taskId: Long,
-    getTaskDetailUseCase: GetTaskDetailUseCase,
+    private val getTaskDetailUseCase: GetTaskDetailUseCase,
     private val executeTaskUseCase: ExecuteTaskUseCase
 ) : ViewModel() {
 
-    /**
-     * Represents the UI state of the Task Detail screen.
-     * It's a StateFlow, meaning it holds and emits the current state,
-     * allowing UI to react to changes.
-     */
-    val uiState: StateFlow<UiState> = getTaskDetailUseCase(taskId)
-        .map { result -> // Map the Result from the use case to UiState
-            result.fold(
-                onSuccess = { task ->
-                    // If successful, and task is not null, emit Success state.
-                    // Otherwise, emit a DataError.
-                    task?.let {
-                        UiState.Success(it)
-                    } ?: UiState.DataError(AppText.from(R.string.data_error))
-                },
-                onFailure = { throwable ->
-                    // If fetching fails, emit a DataError with a dynamic or default message.
-                    UiState.DataError(
-                        throwable.message?.let(AppText::dynamic)
-                            ?: AppText.from(R.string.data_error)
-                    )
-                }
-            )
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = UiState.LoadingData
-        )
+    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.LoadingData)
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    private val _executingTaskState: MutableStateFlow<ExecutingTaskState> =
+        MutableStateFlow(ExecutingTaskState.Idle)
+    val executingTaskState: StateFlow<ExecutingTaskState> = _executingTaskState.asStateFlow()
 
     private val _events = PublishFlow<TaskDetailEvent>()
     val events: Flow<TaskDetailEvent> = _events
+
+    init {
+        loadTaskDetail()
+    }
+
+    /**
+     * Initiates the loading of task details and updates the uiState.
+     */
+    private fun loadTaskDetail() {
+        viewModelScope.launch {
+            getTaskDetailUseCase(taskId)
+                .map { result ->
+                    result.fold(
+                        onSuccess = { task ->
+                            task?.let {
+                                UiState.Success(it)
+                            } ?: UiState.DataError(AppText.from(R.string.data_error))
+                        },
+                        onFailure = { throwable ->
+                            UiState.DataError(
+                                throwable.message?.let(AppText::dynamic)
+                                    ?: AppText.from(R.string.data_error)
+                            )
+                        }
+                    )
+                }
+                .collect { newState ->
+                    _uiState.value = newState
+                }
+        }
+    }
 
     /**
      * Handles the action of executing a task.
@@ -72,16 +78,21 @@ class TaskDetailViewModel @AssistedInject constructor(
      */
     fun onExecuteTask() {
         viewModelScope.launch {
-            val currentTask = (uiState.value as? UiState.Success)?.task
+            if (_executingTaskState.value == ExecutingTaskState.Executing) {
+                return@launch
+            }
+
+            val currentTask = (_uiState.value as? UiState.Success)?.task
             currentTask?.let {
-                _events.emit(TaskDetailEvent.ExecutingTaskStarted)
+                _executingTaskState.value = ExecutingTaskState.Executing
+
                 runCatching {
                     executeTaskUseCase(taskId)
                 }.onSuccess {
-                    _events.emit(TaskDetailEvent.ExecutingTaskFinished)
+                    _executingTaskState.value = ExecutingTaskState.Idle
                     _events.emit(TaskDetailEvent.ShowSnackbar(AppText.from(R.string.task_executed_success)))
                 }.onFailureIgnoreCancellation {
-                    _events.emit(TaskDetailEvent.ExecutingTaskFinished)
+                    _executingTaskState.value = ExecutingTaskState.Idle
                     _events.emit(TaskDetailEvent.ShowSnackbar(AppText.from(R.string.task_executed_failure)))
                 }
             }
@@ -98,12 +109,20 @@ class TaskDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Sealed interface representing the state of a task execution operation.
+     * Used to manage the UI state of the "Execute Task" button and related indicators.
+     * Defined within the ViewModel as it's primarily used in this context.
+     */
+    sealed interface ExecutingTaskState {
+        data object Idle : ExecutingTaskState
+        data object Executing : ExecutingTaskState
+    }
+
+    /**
      * Sealed interface representing one-time events that the UI should react to.
      */
     sealed interface TaskDetailEvent {
         data class ShowSnackbar(val message: AppText) : TaskDetailEvent
-        data object ExecutingTaskStarted : TaskDetailEvent
-        data object ExecutingTaskFinished : TaskDetailEvent
     }
 
     /**

@@ -7,11 +7,13 @@ import com.vlamik.core.data.mappers.TaskMapper.toTaskItemModel
 import com.vlamik.core.domain.models.TaskDetailModel
 import com.vlamik.core.domain.models.TaskItemModel
 import com.vlamik.core.domain.repository.TaskRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -42,7 +44,7 @@ class TaskRepositoryImpl @Inject constructor(private val taskDataSource: TaskDat
             }
         }.catch { e ->
             emit(Result.failure(e))
-        }
+        }.flowOn(Dispatchers.Default)
     }
 
     override fun getTaskById(taskId: Long): Flow<Result<TaskDetailModel?>> {

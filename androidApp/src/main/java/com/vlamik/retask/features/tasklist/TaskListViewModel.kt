@@ -10,10 +10,12 @@ import com.vlamik.retask.commons.StringResourceProvider
 import com.vlamik.retask.mappers.TaskUiMapper.toTaskItemUiModel
 import com.vlamik.retask.models.TaskItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,7 +43,7 @@ class TaskListViewModel @Inject constructor(
      */
     private fun loadTasks() {
         viewModelScope.launch {
-            getTaskListUseCase().collectLatest { result ->
+            getTaskListUseCase().flowOn(Dispatchers.Default).collectLatest { result ->
                 result
                     .onSuccess { tasks ->
                         _state.value = TaskListScreenUiState.UpdateSuccess(tasks.map {

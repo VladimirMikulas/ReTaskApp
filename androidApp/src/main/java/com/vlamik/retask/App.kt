@@ -3,7 +3,7 @@ package com.vlamik.retask
 import android.app.Application
 import android.os.StrictMode
 import com.vlamik.core.commons.Log.addLogger
-import com.vlamik.retask.common.utils.AndroidLogger
+import com.vlamik.retask.commons.utils.AndroidLogger
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

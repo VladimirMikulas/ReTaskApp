@@ -1,6 +1,6 @@
 package com.vlamik.core.domain.commons.utils
 
-import com.vlamik.core.domain.models.TaskStatusColor
+import com.vlamik.core.domain.models.TaskStatus
 import com.vlamik.core.domain.models.TaskTimeStatus
 import com.vlamik.core.domain.models.TimeComponents
 import kotlin.math.abs
@@ -21,7 +21,7 @@ private const val YEAR_IN_MILLIS_APPROX = 365 * DAY_IN_MILLIS // Approximation f
  * @return A TimeComponents object with the decomposed time.
  * Note: Months and years are approximations if a fixed MILLIS value is used.
  */
-fun calculateTimeComponents(durationMillis: Long): TimeComponents {
+private fun calculateTimeComponents(durationMillis: Long): TimeComponents {
     require(durationMillis >= 0) { "Duration must be non-negative" }
 
     var remainingMillis = durationMillis
@@ -47,7 +47,6 @@ fun calculateTimeComponents(durationMillis: Long): TimeComponents {
 }
 
 
-// Assuming TaskItemModel (or the data source) has `lastExecutedMillis` and `maxIntervalMillis`
 fun getTaskTimeStatus(
     lastExecutedMillis: Long,
     maxIntervalMillis: Long,
@@ -95,18 +94,18 @@ fun getTaskTimeStatus(
 
 }
 
-fun calculateTaskStatusColor(
+fun calculateTaskStatus(
     currentTime: Long,
     lastExecuted: Long,
     minInterval: Long,
     maxInterval: Long
-): TaskStatusColor {
+): TaskStatus {
     val minExecuteTime = lastExecuted + minInterval
     val maxExecuteTime = lastExecuted + maxInterval
 
     return when {
-        currentTime >= maxExecuteTime -> TaskStatusColor.RED
-        currentTime >= minExecuteTime -> TaskStatusColor.ORANGE
-        else -> TaskStatusColor.GREEN
+        currentTime >= maxExecuteTime -> TaskStatus.REQUIRED
+        currentTime >= minExecuteTime -> TaskStatus.OPTIONAL
+        else -> TaskStatus.DONE
     }
 }

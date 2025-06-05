@@ -1,7 +1,7 @@
 package com.vlamik.core.data.mappers
 
 import com.vlamik.core.data.datasource.db.entity.TaskEntity
-import com.vlamik.core.domain.commons.utils.calculateTaskStatusColor
+import com.vlamik.core.domain.commons.utils.calculateTaskStatus
 import com.vlamik.core.domain.commons.utils.getTaskTimeStatus
 import com.vlamik.core.domain.models.TaskDetailModel
 import com.vlamik.core.domain.models.TaskItemModel
@@ -9,7 +9,7 @@ import com.vlamik.core.domain.models.TaskItemModel
 /**
  * Object responsible for mapping between domain models and the TaskEntity database entity.
  */
-object TaskMapper {
+object TaskDataMapper {
     /**
      * Maps a TaskEntity to a simplified domain model TaskItemModel
      */
@@ -19,7 +19,7 @@ object TaskMapper {
             maxIntervalMillis = this.maxIntervalMillis,
             currentTimeMillis = currentTime
         )
-        val taskStatusColor = calculateTaskStatusColor(
+        val taskStatus = calculateTaskStatus(
             currentTime,
             this.lastExecutedMillis,
             this.minIntervalMillis,
@@ -29,7 +29,7 @@ object TaskMapper {
         return TaskItemModel(
             id = this.id,
             name = this.name,
-            status = taskStatusColor,
+            status = taskStatus,
             timeStatus = taskTimeStatus
         )
     }

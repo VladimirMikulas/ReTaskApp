@@ -1,11 +1,10 @@
 package com.vlamik.core.domain.models
 
-enum class TaskStatusColor {
-    GREEN,    // Task does not need to be performed
-    ORANGE,   // Task can be performed, but it's not mandatory
-    RED       // Task must be performed
+enum class TaskStatus {
+    DONE,    // Task does not need to be performed
+    OPTIONAL,   // Task can be performed, but it's not mandatory
+    REQUIRED       // Task must be performed
 }
-
 
 /**
  * Domain model representing a task item for list (TaskList).
@@ -15,6 +14,6 @@ enum class TaskStatusColor {
 data class TaskItemModel(
     val id: Long,
     val name: String,
-    val status: TaskStatusColor,
+    val status: TaskStatus,
     val timeStatus: TaskTimeStatus
 )

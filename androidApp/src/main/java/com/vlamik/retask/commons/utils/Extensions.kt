@@ -1,4 +1,4 @@
-package com.vlamik.retask.common.utils
+package com.vlamik.retask.commons.utils
 
 import android.content.Context
 import com.vlamik.core.commons.AppText

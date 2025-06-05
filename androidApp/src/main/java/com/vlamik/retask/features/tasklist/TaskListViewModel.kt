@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vlamik.core.commons.AppText
 import com.vlamik.core.commons.onFailureIgnoreCancellation
-import com.vlamik.core.domain.models.TaskItemModel
 import com.vlamik.core.domain.usecase.GetTaskListUseCase
 import com.vlamik.retask.R
+import com.vlamik.retask.commons.StringResourceProvider
+import com.vlamik.retask.mappers.TaskUiMapper.toTaskItemUiModel
+import com.vlamik.retask.models.TaskItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,8 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
     private val getTaskListUseCase: GetTaskListUseCase,
+    private val stringResourceProvider: StringResourceProvider
 ) : ViewModel() {
-
     private val _state = MutableStateFlow<TaskListScreenUiState>(TaskListScreenUiState.LoadingData)
     val state: StateFlow<TaskListScreenUiState> = _state.asStateFlow()
 
@@ -42,7 +44,9 @@ class TaskListViewModel @Inject constructor(
             getTaskListUseCase().collectLatest { result ->
                 result
                     .onSuccess { tasks ->
-                        _state.value = TaskListScreenUiState.UpdateSuccess(tasks)
+                        _state.value = TaskListScreenUiState.UpdateSuccess(tasks.map {
+                            it.toTaskItemUiModel(stringResourceProvider)
+                        })
                     }
                     .onFailureIgnoreCancellation { throwable ->
                         _state.value = TaskListScreenUiState.DataError(throwable.message?.let {
@@ -59,7 +63,7 @@ class TaskListViewModel @Inject constructor(
     sealed interface TaskListScreenUiState {
         data object LoadingData : TaskListScreenUiState
         data class UpdateSuccess(
-            val tasks: List<TaskItemModel>
+            val tasks: List<TaskItemUiModel>
         ) : TaskListScreenUiState
 
         data class DataError(val error: AppText) : TaskListScreenUiState

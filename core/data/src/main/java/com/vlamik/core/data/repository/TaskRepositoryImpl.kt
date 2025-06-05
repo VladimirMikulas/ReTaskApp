@@ -2,8 +2,8 @@ package com.vlamik.core.data.repository
 
 import com.vlamik.core.data.datasource.TaskDataSource
 import com.vlamik.core.data.datasource.db.entity.TaskEntity
-import com.vlamik.core.data.mappers.TaskMapper.toTaskDetailModel
-import com.vlamik.core.data.mappers.TaskMapper.toTaskItemModel
+import com.vlamik.core.data.mappers.TaskDataMapper.toTaskDetailModel
+import com.vlamik.core.data.mappers.TaskDataMapper.toTaskItemModel
 import com.vlamik.core.domain.models.TaskDetailModel
 import com.vlamik.core.domain.models.TaskItemModel
 import com.vlamik.core.domain.repository.TaskRepository

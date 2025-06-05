@@ -1,4 +1,4 @@
-package com.vlamik.retask.common.utils.preview
+package com.vlamik.retask.commons.utils.preview
 
 import androidx.compose.ui.tooling.preview.Preview
 

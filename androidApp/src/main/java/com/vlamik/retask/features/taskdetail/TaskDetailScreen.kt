@@ -29,10 +29,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.vlamik.core.domain.models.TaskDetailModel
 import com.vlamik.retask.R
-import com.vlamik.retask.common.utils.asString
-import com.vlamik.retask.common.utils.preview.DeviceFormatPreview
-import com.vlamik.retask.common.utils.preview.FontScalePreview
-import com.vlamik.retask.common.utils.preview.ThemeModePreview
+import com.vlamik.retask.commons.utils.asString
+import com.vlamik.retask.commons.utils.preview.DeviceFormatPreview
+import com.vlamik.retask.commons.utils.preview.FontScalePreview
+import com.vlamik.retask.commons.utils.preview.ThemeModePreview
 import com.vlamik.retask.component.ErrorMessage
 import com.vlamik.retask.component.LoadingIndicator
 import com.vlamik.retask.component.appbars.ReTaskAppBar

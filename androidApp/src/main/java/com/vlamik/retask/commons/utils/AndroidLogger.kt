@@ -1,4 +1,4 @@
-package com.vlamik.retask.common.utils
+package com.vlamik.retask.commons.utils
 
 import com.vlamik.core.commons.Log
 

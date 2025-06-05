@@ -3,6 +3,7 @@ package com.vlamik.retask.features.tasklist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vlamik.core.commons.AppText
+import com.vlamik.core.commons.DispatcherProvider
 import com.vlamik.core.commons.onFailureIgnoreCancellation
 import com.vlamik.core.domain.usecase.GetTaskListUseCase
 import com.vlamik.retask.R
@@ -10,13 +11,12 @@ import com.vlamik.retask.commons.StringResourceProvider
 import com.vlamik.retask.mappers.TaskUiMapper.toTaskItemUiModel
 import com.vlamik.retask.models.TaskItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -28,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
     private val getTaskListUseCase: GetTaskListUseCase,
-    private val stringResourceProvider: StringResourceProvider
+    private val stringResourceProvider: StringResourceProvider,
+    private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
     private val _state = MutableStateFlow<TaskListScreenUiState>(TaskListScreenUiState.LoadingData)
     val state: StateFlow<TaskListScreenUiState> = _state.asStateFlow()
@@ -43,12 +44,15 @@ class TaskListViewModel @Inject constructor(
      */
     private fun loadTasks() {
         viewModelScope.launch {
-            getTaskListUseCase().flowOn(Dispatchers.Default).collectLatest { result ->
+            getTaskListUseCase().collectLatest { result ->
                 result
                     .onSuccess { tasks ->
-                        _state.value = TaskListScreenUiState.UpdateSuccess(tasks.map {
-                            it.toTaskItemUiModel(stringResourceProvider)
-                        })
+                        val taskItemUiModels = withContext(dispatcherProvider.default) {
+                            tasks.map {
+                                it.toTaskItemUiModel(stringResourceProvider)
+                            }
+                        }
+                        _state.value = TaskListScreenUiState.UpdateSuccess(taskItemUiModels)
                     }
                     .onFailureIgnoreCancellation { throwable ->
                         _state.value = TaskListScreenUiState.DataError(throwable.message?.let {

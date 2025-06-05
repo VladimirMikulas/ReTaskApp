@@ -1,22 +1,21 @@
 package com.vlamik.retask.di
 
-import androidx.annotation.VisibleForTesting
-import com.vlamik.core.commons.BackgroundDispatcher
+import com.vlamik.core.commons.AppDispatcherProvider
+import com.vlamik.core.commons.DispatcherProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.Dispatchers
-import kotlin.coroutines.CoroutineContext
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 open class CoroutineModule {
 
-    @VisibleForTesting
-    internal open val backgroundDispatcher = Dispatchers.IO
 
+    @Singleton
     @Provides
-    @BackgroundDispatcher
-    open fun backgroundContext(): CoroutineContext = backgroundDispatcher
+    fun providesDispatcherProvider(): DispatcherProvider {
+        return AppDispatcherProvider()
+    }
 }

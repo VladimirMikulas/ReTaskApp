@@ -1,5 +1,6 @@
 package com.vlamik.core.data.repository
 
+import com.vlamik.core.commons.DispatcherProvider
 import com.vlamik.core.data.datasource.TaskDataSource
 import com.vlamik.core.data.datasource.db.entity.TaskEntity
 import com.vlamik.core.data.mappers.TaskDataMapper.toTaskDetailModel
@@ -7,7 +8,6 @@ import com.vlamik.core.data.mappers.TaskDataMapper.toTaskItemModel
 import com.vlamik.core.domain.models.TaskDetailModel
 import com.vlamik.core.domain.models.TaskItemModel
 import com.vlamik.core.domain.repository.TaskRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -17,7 +17,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class TaskRepositoryImpl @Inject constructor(private val taskDataSource: TaskDataSource) :
+class TaskRepositoryImpl @Inject constructor(
+    private val taskDataSource: TaskDataSource,
+    private val dispatcherProvider: DispatcherProvider
+) :
     TaskRepository {
     override suspend fun initTasksData() {
         taskDataSource.initTasksData()
@@ -44,7 +47,7 @@ class TaskRepositoryImpl @Inject constructor(private val taskDataSource: TaskDat
             }
         }.catch { e ->
             emit(Result.failure(e))
-        }.flowOn(Dispatchers.Default)
+        }.flowOn(dispatcherProvider.default)
     }
 
     override fun getTaskById(taskId: Long): Flow<Result<TaskDetailModel?>> {
